@@ -1,4 +1,4 @@
-﻿# HobEngine
+# HobEngine
 
 C++ 3D game engine built from scratch with OpenGL.
 
@@ -47,34 +47,33 @@ The codebase is the same, but the development tooling has been completely rebuil
 1. Install MSYS2 from https://www.msys2.org/
 
 2. Install dependencies:
-\\\ash
+```bash
 pacman -S mingw-w64-ucrt-x86_64-gcc
 pacman -S mingw-w64-ucrt-x86_64-cmake
 pacman -S mingw-w64-ucrt-x86_64-ninja
-\\\
+```
 
 3. Clone repository:
-\\\ash
+```bash
 git clone https://github.com/Hob-77/HobEngine.git
 cd HobEngine
-\\\
+```
 
 4. Configure and build:
-\\\ash
+```bash
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
-\\\
+```
 
 5. Run:
-\\\ash
+```bash
 ./build/HobEngine.exe
-\\\
+```
 
 ---
 
 ## Project Structure
-
-\\\
+```
 HobEngine/
 ├── CMakeLists.txt          # Build configuration
 ├── src/                    # Engine source code
@@ -89,7 +88,7 @@ HobEngine/
 │   ├── imgui/
 │   └── stb_image/
 └── assets/                 # Shaders, textures
-\\\
+```
 
 ---
 
