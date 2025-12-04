@@ -5,18 +5,21 @@ CMakeFiles/
 cmake_install.cmake
 compile_commands.json
 
-# Compiled binaries
-*.exe
-*.dll
-*.o
-*.a
-*.lib
+# Compiled binaries (only in root/build, NOT vendor)
+/*.exe
+/*.dll
+/*.o
+/*.a
+build/**/*.exe
+build/**/*.dll
+build/**/*.o
+build/**/*.a
 
 # Engine runtime files
 engine.log
 *.log
 
-# ImGui config (user-specific window positions)
+# ImGui config
 imgui.ini
 
 # Cache folders
