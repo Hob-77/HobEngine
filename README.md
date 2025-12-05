@@ -9,7 +9,7 @@ This repository is a continuation of [GameEngine](https://github.com/Hob-77/Game
 **What changed:**
 - **Build System:** Visual Studio → CMake + Ninja
 - **Editor:** Visual Studio → Neovim with clangd LSP
-- **Compiler:** MSVC → MinGW-w64 GCC 15.2.0 (UCRT64)
+- **Compiler:** MSVC → LLVM/Clang (using GNU libstdc++ from MinGW-w64)
 - **Development Environment:** Fully free and cross-platform ready
 
 The codebase is the same, but the development tooling has been completely rebuilt for better performance and portability.
@@ -39,7 +39,7 @@ The codebase is the same, but the development tooling has been completely rebuil
 ### Requirements
 - CMake 3.20+
 - Ninja build system
-- MinGW-w64 GCC (UCRT64 from MSYS2)
+- MinGW-w64 (UCRT64 from MSYS2)
 - Git
 
 ### Windows (MSYS2)
@@ -49,6 +49,7 @@ The codebase is the same, but the development tooling has been completely rebuil
 2. Install dependencies:
 ```bash
 pacman -S mingw-w64-ucrt-x86_64-gcc
+pacman -S mingw-w64-ucrt-x86_64-clang
 pacman -S mingw-w64-ucrt-x86_64-cmake
 pacman -S mingw-w64-ucrt-x86_64-ninja
 ```
@@ -108,10 +109,11 @@ No external package managers required.
 ## Development Tools
 
 - **Editor:** Neovim with clangd LSP
-- **Compiler:** GCC 15.2.0 (MinGW-w64 UCRT64)
+- **Compiler:** LLVM/Clang (clang++)
+- **Standard Library:** GNU libstdc++ (MinGW-w64)
 - **Build System:** CMake + Ninja
 - **Debugger:** RAD Debugger
-- **Standards:** C++20, C17
+- **Language Standards:** C++20, C17
 
 **Neovim config:** https://github.com/Hob-77/nvim_config
 
