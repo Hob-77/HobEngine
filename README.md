@@ -1,6 +1,6 @@
 # HobEngine
 
-C++ 3D game engine built from scratch with OpenGL.
+C++ 3D game engine built with minimal dependencies.
 
 ## Migration Notice
 
@@ -18,7 +18,7 @@ The codebase is the same, but the development tooling has been completely rebuil
 
 ## Features
 
-- Custom 3D renderer (OpenGL 4.6)
+- Custom 3D renderer
 - Forward rendering with multiple light sources
 - Scene management
 - Input system
@@ -34,39 +34,48 @@ The codebase is the same, but the development tooling has been completely rebuil
 
 ---
 
-## Build Instructions
+## Requirements
 
-### Requirements
+- MSYS2 (UCRT64 environment)
+- MinGW-w64 toolchain (UCRT64)
+- LLVM/Clang (UCRT64)
+- Clang tools extra: clangd, clang-tidy, clang-format
 - CMake 3.20+
 - Ninja build system
-- MinGW-w64 (UCRT64 from MSYS2)
 - Git
 
-### Windows (MSYS2)
+---
 
-1. Install MSYS2 from https://www.msys2.org/
+## Windows (MSYS2 UCRT64) Build Instructions
 
-2. Install dependencies:
+### 1. Install MSYS2
+Download and install MSYS2 from: [https://www.msys2.org/](https://www.msys2.org/)
+
+### 2. Use the UCRT64 environment
+Open the terminal named `MSYS2 UCRT64`. All commands below must be run inside this shell.
+
+### 3. Install required packages
 ```bash
 pacman -S mingw-w64-ucrt-x86_64-gcc
 pacman -S mingw-w64-ucrt-x86_64-clang
+pacman -S mingw-w64-ucrt-x86_64-clang-tools-extra   # clangd, clang-tidy, clang-format
 pacman -S mingw-w64-ucrt-x86_64-cmake
 pacman -S mingw-w64-ucrt-x86_64-ninja
 ```
 
-3. Clone repository:
+### 4. Clone the repository
 ```bash
 git clone https://github.com/Hob-77/HobEngine.git
 cd HobEngine
 ```
 
-4. Configure and build:
+### 5. Configure and build
 ```bash
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-5. Run:
+### 6. Run
 ```bash
 ./build/HobEngine.exe
 ```
@@ -76,26 +85,25 @@ cmake --build build
 ## Project Structure
 ```
 HobEngine/
-├── CMakeLists.txt          # Build configuration
-├── src/                    # Engine source code
+├── CMakeLists.txt
+├── src/
 │   ├── core/
 │   ├── renderer/
 │   ├── scene/
 │   └── ...
-├── vendor/                 # Vendored dependencies
+├── vendor/
 │   ├── SDL3/
 │   ├── glad/
 │   ├── glm/
 │   ├── imgui/
 │   └── stb_image/
-└── assets/                 # Shaders, textures
+└── assets/
 ```
 
 ---
 
 ## Dependencies (Vendored)
 
-All dependencies are included:
 - **SDL3** - Window management and input
 - **GLAD** - OpenGL function loader
 - **GLM** - OpenGL Mathematics
@@ -115,10 +123,10 @@ No external package managers required.
 - **Debugger:** RAD Debugger
 - **Language Standards:** C++20, C17
 
-**Neovim config:** https://github.com/Hob-77/nvim_config
+**Neovim config:** [https://github.com/Hob-77/nvim_config](https://github.com/Hob-77/nvim_config)
 
 ---
 
 ## Previous Version
 
-Visual Studio version: https://github.com/Hob-77/GameEngine
+Visual Studio version: [https://github.com/Hob-77/GameEngine](https://github.com/Hob-77/GameEngine)
