@@ -1,38 +1,81 @@
-﻿# CMake build artifacts
+﻿# ============================================================================
+# CMake build artifacts
+# ============================================================================
 build/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 compile_commands.json
+install_manifest.txt
+CTestTestfile.cmake
+_deps/
 
-# Compiled binaries (only in root/build, NOT vendor)
-/*.exe
-/*.dll
-/*.o
-/*.a
-build/**/*.exe
-build/**/*.dll
-build/**/*.o
-build/**/*.a
+# ============================================================================
+# Compiled binaries (build outputs only, NOT vendored libraries)
+# ============================================================================
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+*.a
+*.obj
 
+# ============================================================================
 # Engine runtime files
+# ============================================================================
 engine.log
 *.log
 
-# ImGui config
+# ============================================================================
+# IDE/Editor files
+# ============================================================================
+# ImGui
 imgui.ini
 
-# Cache folders
-cache/
-.cache/
-
-# Neovim session files
+# Neovim
 *.vim
+.nvim/
 
+# Visual Studio / VSCode
+.vs/
+.vscode/
+*.suo
+*.user
+*.sln.docstates
+
+# CLion / JetBrains
+.idea/
+cmake-build-*/
+
+# ============================================================================
+# OS-specific files
+# ============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+.directory
+
+# ============================================================================
 # Debug artifacts
+# ============================================================================
 *.pdb
 *.ilk
+*.dSYM/
 
-# OS artifacts
-.DS_Store
-Thumbs.db
+# ============================================================================
+# Temporary files
+# ============================================================================
+cache/
+.cache/
+tmp/
+temp/
