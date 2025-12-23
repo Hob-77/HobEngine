@@ -703,7 +703,7 @@ private:
         config.window.title = "Complete Primitive Showcase - All 10 Shapes";
         config.window.width = 1920;
         config.window.height = 1080;
-        config.window.vsync = true;      // Keep vsync default
+        config.window.vsync = false;      // Keep vsync default
         config.window.fullscreen = true;
         config.window.resizable = true;  // Keep resizable default
 

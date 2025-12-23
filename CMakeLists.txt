@@ -40,14 +40,24 @@ endif()
 # VENDORED LIBRARIES
 # ============================================================================
 
-# SDL3 (MinGW version)
+# SDL3 (vendored on both platforms)
 add_library(SDL3 SHARED IMPORTED)
 if(WIN32)
+    # Windows: Use vendored SDL3 DLL
     set_target_properties(SDL3 PROPERTIES
-        IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/x64/SDL3.dll"
-        IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/x64/libSDL3.dll.a"
+        IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/windows/SDL3.dll"
+        IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/windows/libSDL3.dll.a"
         INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor/SDL3/include"
     )
+else()
+    # Linux: Use vendored SDL3 .so
+    set_target_properties(SDL3 PROPERTIES
+        IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/linux/libSDL3.so"
+        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor/SDL3/include"
+    )
+    # Set RPATH so the executable finds libSDL3.so at runtime
+    set(CMAKE_INSTALL_RPATH "$ORIGIN/../vendor/SDL3/lib/linux")
+    set(CMAKE_BUILD_RPATH "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/linux")
 endif()
 
 # GLAD (compile from source)
@@ -77,8 +87,8 @@ add_library(imgui STATIC
 target_include_directories(imgui PUBLIC
     vendor/imgui
     vendor/imgui/backends
-    vendor/SDL3/include
-    vendor/glad/include
+    ${CMAKE_SOURCE_DIR}/vendor/SDL3/include
+    ${CMAKE_SOURCE_DIR}/vendor/glad/include
 )
 
 # stb_image (compile from source)
@@ -88,6 +98,11 @@ add_library(stb_image STATIC
 target_include_directories(stb_image PUBLIC
     vendor/stb_image
 )
+
+# ============================================================================
+# OPENGL
+# ============================================================================
+find_package(OpenGL REQUIRED)
 
 # ============================================================================
 # COLLECT ENGINE SOURCE FILES
@@ -103,7 +118,7 @@ add_executable(HobEngine
     ${ENGINE_HEADERS}
 )
 
-# Force console subsystem
+# Force console subsystem on Windows
 if(WIN32)
     target_link_options(HobEngine PRIVATE -mconsole)
 endif()
@@ -136,19 +151,31 @@ target_link_libraries(HobEngine PRIVATE
     glad
     glm
     stb_image
-    opengl32
+    OpenGL::GL
 )
 
 # ============================================================================
-# POST-BUILD: COPY SDL3.DLL AND ASSETS
+# POST-BUILD: COPY SDL3 LIBRARY AND ASSETS
 # ============================================================================
-add_custom_command(TARGET HobEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/x64/SDL3.dll"
-    $<TARGET_FILE_DIR:HobEngine>
-    COMMENT "Copying SDL3.dll"
-)
+if(WIN32)
+    # Copy SDL3.dll on Windows
+    add_custom_command(TARGET HobEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/windows/SDL3.dll"
+        $<TARGET_FILE_DIR:HobEngine>
+        COMMENT "Copying SDL3.dll"
+    )
+else()
+    # Copy libSDL3.so on Linux
+    add_custom_command(TARGET HobEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/linux/libSDL3.so"
+        $<TARGET_FILE_DIR:HobEngine>
+        COMMENT "Copying libSDL3.so"
+    )
+endif()
 
+# Copy assets (both platforms)
 add_custom_command(TARGET HobEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/assets
