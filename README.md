@@ -24,15 +24,9 @@ Precompiled binaries are available on the [releases page](https://github.com/Hob
 
 For those who want to build from source, the instructions below require MSYS2 with the UCRT64 environment.
 
-### 1. Install MSYS2
+### 1. Install MSYS2 packages
 
-Download and install MSYS2 from: [https://www.msys2.org/](https://www.msys2.org/)
-
-### 2. Use the UCRT64 environment
-
-Open the terminal named `MSYS2 UCRT64`. All commands below must be run inside this shell.
-
-### 3. Install required packages
+Download and install MSYS2 from [https://www.msys2.org/](https://www.msys2.org/), open the terminal named `MSYS2 UCRT64` and run:
 ```bash
 pacman -S mingw-w64-ucrt-x86_64-gcc
 pacman -S mingw-w64-ucrt-x86_64-clang
@@ -41,22 +35,25 @@ pacman -S mingw-w64-ucrt-x86_64-cmake
 pacman -S mingw-w64-ucrt-x86_64-ninja
 ```
 
-### 4. Clone the repository
-```bash
+### 2. Clone the repository
+
+Open Command Prompt and run:
+```cmd
 git clone https://github.com/Hob-77/HobEngine.git
 cd HobEngine
 ```
 
-### 5. Configure and build
-```bash
+### 3. Configure and build
+```cmd
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-### 6. Run an example
-```bash
-.\build\01_comprehensive.exe   # Full feature demo
-.\build\02_modelshowcase.exe   # OBJ model loading demo
+### 4. Run an example
+```cmd
+cd build
+.\01_comprehensive.exe   # Full feature demo
+.\02_modelshowcase.exe   # OBJ model loading demo
 ```
 
 ---
@@ -82,8 +79,9 @@ cmake --build build
 
 ### 4. Run an example
 ```bash
-./build/01_comprehensive   # Full feature demo
-./build/02_modelshowcase   # OBJ model loading demo
+cd build
+./01_comprehensive   # Full feature demo
+./02_modelshowcase   # OBJ model loading demo
 ```
 
 ---
