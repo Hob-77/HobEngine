@@ -1,58 +1,28 @@
 # HobEngine
 
-C++ 3D game engine built with minimal dependencies.
+> This project is a continuation of [GameEngine](https://github.com/Hob-77/GameEngine).
 
-## Migration Notice
+## Overview
 
-This repository is a continuation of [GameEngine](https://github.com/Hob-77/GameEngine).
+HobEngine is a 3D rendering engine written in C++20, built with minimal dependencies over roughly 500 hours across 2 months. Many projects led up to this point including a 2D engine, each one building toward the goal of tackling 3D graphics seriously through primary sources rather than tutorials.
 
-**What changed:**
-- **Build System:** Visual Studio → CMake + Ninja
-- **Editor:** Visual Studio → Neovim with clangd LSP
-- **Compiler:** MSVC → LLVM/Clang
-- **Development Environment:** Fully free and cross-platform (Windows + Linux)
+The study began with Casey Muratori's Handmade Hero, The Cherno's Game Engine Series, Game Engine Architecture by Jason Gregory, and Real-Time Rendering by Tomas Akenine-Möller, Eric Haines, and Naty Hoffman. The intent was to synthesize those into a system built on understood foundations. Every architectural decision in this engine has a concrete reason behind it.
 
-The codebase is the same, but the development tooling has been completely rebuilt for better performance and portability.
+The rendering pipeline is a forward renderer with a fully API-agnostic interface layer. Scene, Camera, Material, and all engine logic have zero OpenGL in them. The OpenGL backend implements IRenderDevice, IShader, ITexture, IMesh, IFramebuffer, and IDebugRenderer. Replacing OpenGL with Vulkan means implementing those interfaces, not rewriting the engine. The render queue sorts by shader then material then distance, producing a 98% reduction in material bind calls. A centralized renderer class caches OpenGL state, reducing redundant state changes by 81.9%. Frustum culling eliminates 50-95% of objects before they reach the GPU. Instanced rendering reduces 1000 draw calls to one at a 150x measured speedup. These were not micro-optimizations added later, they were designed in from the start because graphics is an optimization-heavy domain and algorithmic decisions compound.
 
----
+Dependencies were kept minimal intentionally. If the project was starting from nothing, cross-platform compatibility was worth thinking about from the start rather than retrofitting it later. All dependencies are vendored and version-locked.
 
-## Features
+Development started in Visual Studio with MSVC then migrated fully to Neovim with clangd LSP and Clang/LLVM. The migration happened for concrete reasons. MSVC uses a 1.5x vector growth factor and Clang uses 2.0x, which matters when minimizing reallocations in performance-critical systems. Clang also enforces stricter C++20 compliance than MSVC, which caught real bugs and produced a measured 67% FPS improvement in debug mode. The tooling structure that resulted is clean: the compiler handles errors, Clang-Tidy handles static analysis and recommendations, and IntelliSense handles editor features only.
 
-- Custom 3D renderer (OpenGL 4.6)
-- Forward rendering with multiple light sources
-- Scene management
-- Input system
-- Post-processing effects
-- Skybox rendering with cubemap textures
-- Model loading (.obj)
-- **Cross-platform:** Runs identically on Windows and Linux
-
-*Test scene: 11 primitives, 3 lights (forward rendering), skybox with cubemap textures*
+The result is a capable forward renderer with zero memory leaks, zero crashes, and an architecture designed to grow. Physics, animation, audio, and networking are out of scope for this phase.
 
 ---
 
-## Requirements
+## Windows
 
-### Common (Both Platforms)
-- CMake 3.20+
-- Ninja build system
-- Git
-- LLVM/Clang compiler
-- clangd (for LSP support)
+Precompiled binaries are available on the [releases page](https://github.com/Hob-77/HobEngine/releases) for those who do not want to build from source.
 
-### Windows-Specific
-- MSYS2 (UCRT64 environment)
-- MinGW-w64 toolchain (UCRT64)
-- Clang tools extra (clang-tidy, clang-format)
-
-### Linux-Specific
-- Build essentials (for system libraries)
-- Clang/LLVM toolchain
-- Clang tools (clang-tidy, clang-format)
-
----
-
-## Windows (MSYS2 UCRT64) Build Instructions
+For those who want to build from source, the instructions below require MSYS2 with the UCRT64 environment.
 
 ### 1. Install MSYS2
 
@@ -83,14 +53,15 @@ cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-### 6. Run
+### 6. Run an example
 ```bash
-./build/HobEngine.exe
+.\build\01_comprehensive.exe   # Full feature demo
+.\build\02_modelshowcase.exe   # OBJ model loading demo
 ```
 
 ---
 
-## Linux (Debian/Ubuntu) Build Instructions
+## Linux (Debian/Ubuntu)
 
 ### 1. Install build dependencies
 ```bash
@@ -109,76 +80,54 @@ cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-### 4. Run
+### 4. Run an example
 ```bash
-./build/HobEngine
+./build/01_comprehensive   # Full feature demo
+./build/02_modelshowcase   # OBJ model loading demo
 ```
 
 ---
 
-## Project Structure
-```
-HobEngine/
-├── CMakeLists.txt          # Cross-platform build configuration
-├── src/
-│   ├── core/               # Core engine systems (Window, Logger, Time)
-│   ├── renderer/           # OpenGL rendering pipeline
-│   │   ├── camera/         # Camera systems (FPS, Orbit)
-│   │   ├── opengl/         # OpenGL-specific implementations
-│   │   └── interface/      # Renderer abstractions
-│   ├── scene/              # Scene management (Objects, Lights, Materials)
-│   ├── input/              # Input handling
-│   ├── math/               # Math utilities and frustum culling
-│   ├── events/             # Event system
-│   └── ui/                 # ImGui integration
-├── vendor/                 # Vendored dependencies (version-locked)
-│   ├── SDL3/
-│   │   ├── include/        # SDL3 headers
-│   │   └── lib/
-│   │       ├── windows/    # SDL3 3.2.2 for Windows (DLL + import lib)
-│   │       └── linux/      # SDL3 3.2.2 for Linux (.so)
-│   ├── glad/               # OpenGL 4.6 loader
-│   ├── glm/                # Math library
-│   ├── imgui/              # Immediate mode GUI
-│   └── stb_image/          # Image loading
-└── assets/
-    ├── shaders/            # GLSL vertex/fragment shaders
-    ├── textures/           # Textures and cubemaps
-    └── models/             # .obj model files
-```
+## Usage
+
+Both examples share the same controls.
+
+### 01_comprehensive
+
+Renders all 10 MeshFactory primitives across two rows with a three-point lighting setup and a skybox. Demonstrates the full rendering pipeline including frustum culling, material batching, three-pass transparency, and instanced rendering.
+
+Row 1: Cube, Sphere, Cylinder, Plane, Quad
+
+Row 2: Cone, Pyramid, Capsule, Torus, Skybox Cube
+
+### 02_modelshowcase
+
+Loads and renders a Nissan Skyline GT-R OBJ model with MTL material support across multiple submeshes. Five lights surround the model evenly. Demonstrates the OBJ loader with multi-material submesh rendering.
+
+Model: [Nissan Skyline GT-R](https://poly.pizza/m/a_HKCtYAv2W) via Poly Pizza
 
 ---
 
-## Dependencies (Vendored)
+### Controls
 
-All dependencies are **vendored** in the repository to ensure version consistency across contributors and platforms. Every user builds with the exact same library versions regardless of OS.
+**Camera**
 
-- **SDL3 3.2.2** - Window management and input
-- **GLAD** - OpenGL 4.6 function loader
-- **GLM** - OpenGL Mathematics
-- **ImGui** - Immediate mode GUI
-- **stb_image** - Image loading
+| Key | Action |
+|-----|--------|
+| W A S D | Move |
+| Mouse | Look |
+| Shift | Sprint |
+| Space / LCtrl | Fly up / down |
+| Tab | Toggle mouse lock |
+| R | Reset camera |
 
-**No external package managers required.** Clone and build - the only difference between platforms is the OS.
+**Debug**
 
----
-
-## Development Tools
-
-- **Editor:** Neovim with clangd LSP
-- **Compiler:** LLVM/Clang (clang++)
-  - Windows: GNU libstdc++ from MinGW-w64
-  - Linux: System libstdc++
-- **Build System:** CMake + Ninja
-- **Debugger:** RAD Debugger (Windows), GDB (Linux)
-- **Language Standards:** C++20, C17
-
-**Neovim config:** [https://github.com/Hob-77/nvim_config](https://github.com/Hob-77/nvim_config)
-
-The development environment is identical on both platforms - same compiler (Clang), same CMakeLists.txt, same Neovim config, same build commands.
-
----
-
-## Previous Version
-
-Visual Studio version: [https://github.com/Hob-77/GameEngine](https://github.com/Hob-77/GameEngine)
+| Key | Action |
+|-----|--------|
+| P | Wireframe mode |
+| B | Bounding spheres |
+| V | AABBs |
+| L | Light positions |
+| K | Skybox |
+| ESC | Exit |

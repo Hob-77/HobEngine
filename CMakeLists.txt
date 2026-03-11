@@ -43,19 +43,16 @@ endif()
 # SDL3 (vendored on both platforms)
 add_library(SDL3 SHARED IMPORTED)
 if(WIN32)
-    # Windows: Use vendored SDL3 DLL
     set_target_properties(SDL3 PROPERTIES
         IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/windows/SDL3.dll"
         IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/windows/libSDL3.dll.a"
         INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor/SDL3/include"
     )
 else()
-    # Linux: Use vendored SDL3 .so
     set_target_properties(SDL3 PROPERTIES
         IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/linux/libSDL3.so"
         INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor/SDL3/include"
     )
-    # Set RPATH so the executable finds libSDL3.so at runtime
     set(CMAKE_INSTALL_RPATH "$ORIGIN/../vendor/SDL3/lib/linux")
     set(CMAKE_BUILD_RPATH "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/linux")
 endif()
@@ -105,28 +102,17 @@ target_include_directories(stb_image PUBLIC
 find_package(OpenGL REQUIRED)
 
 # ============================================================================
-# COLLECT ENGINE SOURCE FILES
+# ENGINE STATIC LIBRARY
 # ============================================================================
 file(GLOB_RECURSE ENGINE_SOURCES "src/*.cpp")
 file(GLOB_RECURSE ENGINE_HEADERS "src/*.h")
 
-# ============================================================================
-# GAME ENGINE EXECUTABLE
-# ============================================================================
-add_executable(HobEngine
+add_library(HobEngineLib STATIC
     ${ENGINE_SOURCES}
     ${ENGINE_HEADERS}
 )
 
-# Force console subsystem on Windows
-if(WIN32)
-    target_link_options(HobEngine PRIVATE -mconsole)
-endif()
-
-# ============================================================================
-# INCLUDE DIRECTORIES
-# ============================================================================
-target_include_directories(HobEngine PRIVATE
+target_include_directories(HobEngineLib PUBLIC
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/events
@@ -142,10 +128,7 @@ target_include_directories(HobEngine PRIVATE
     ${CMAKE_SOURCE_DIR}/vendor/stb_image
 )
 
-# ============================================================================
-# LINK LIBRARIES
-# ============================================================================
-target_link_libraries(HobEngine PRIVATE
+target_link_libraries(HobEngineLib PUBLIC
     imgui
     SDL3
     glad
@@ -155,39 +138,54 @@ target_link_libraries(HobEngine PRIVATE
 )
 
 # ============================================================================
-# POST-BUILD: COPY SDL3 LIBRARY AND ASSETS
+# HELPER: DEFINES AN EXAMPLE EXECUTABLE WITH ALL BOILERPLATE
 # ============================================================================
-if(WIN32)
-    # Copy SDL3.dll on Windows
-    add_custom_command(TARGET HobEngine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/windows/SDL3.dll"
-        $<TARGET_FILE_DIR:HobEngine>
-        COMMENT "Copying SDL3.dll"
-    )
-else()
-    # Copy libSDL3.so on Linux
-    add_custom_command(TARGET HobEngine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/linux/libSDL3.so"
-        $<TARGET_FILE_DIR:HobEngine>
-        COMMENT "Copying libSDL3.so"
-    )
-endif()
+function(add_example TARGET_NAME SOURCE_FILE)
+    add_executable(${TARGET_NAME} ${SOURCE_FILE})
 
-# Copy assets (both platforms)
-add_custom_command(TARGET HobEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:HobEngine>/assets
-    COMMENT "Copying assets"
-)
+    if(WIN32)
+        target_link_options(${TARGET_NAME} PRIVATE -mconsole)
+    endif()
+
+    target_link_libraries(${TARGET_NAME} PRIVATE HobEngineLib)
+
+    # Copy SDL3 library
+    if(WIN32)
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/windows/SDL3.dll"
+            $<TARGET_FILE_DIR:${TARGET_NAME}>
+            COMMENT "Copying SDL3.dll for ${TARGET_NAME}"
+        )
+    else()
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/vendor/SDL3/lib/linux/libSDL3.so"
+            $<TARGET_FILE_DIR:${TARGET_NAME}>
+            COMMENT "Copying libSDL3.so for ${TARGET_NAME}"
+        )
+    endif()
+
+    # Copy assets
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:${TARGET_NAME}>/assets
+        COMMENT "Copying assets for ${TARGET_NAME}"
+    )
+endfunction()
+
+# ============================================================================
+# EXAMPLES
+# ============================================================================
+add_example(01_comprehensive "examples/01_comprehensive/01_comprehensive.cpp")
+add_example(02_modelshowcase "examples/02_modelshowcase/02_modelshowcase.cpp")
 
 # ============================================================================
 # COMPILER FLAGS
 # ============================================================================
 if(MSVC)
-    target_compile_options(HobEngine PRIVATE /W3)
+    target_compile_options(HobEngineLib PRIVATE /W3)
 else()
-    target_compile_options(HobEngine PRIVATE -Wall -Wextra -pedantic)
+    target_compile_options(HobEngineLib PRIVATE -Wall -Wextra -pedantic)
 endif()
