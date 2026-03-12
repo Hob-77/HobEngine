@@ -12,7 +12,7 @@ The rendering pipeline is a forward renderer with a fully API-agnostic interface
 
 Dependencies were kept minimal intentionally. If the project was starting from nothing, cross-platform compatibility was worth thinking about from the start rather than retrofitting it later. All dependencies are vendored and version-locked.
 
-Development started in Visual Studio with MSVC then migrated fully to Neovim with clangd LSP and Clang/LLVM. The migration happened for concrete reasons. MSVC uses a 1.5x vector growth factor and Clang uses 2.0x, which matters when minimizing reallocations in performance-critical systems. Clang also enforces stricter C++20 compliance than MSVC, which caught real bugs and produced a measured 67% FPS improvement in debug mode. The tooling structure that resulted is clean: the compiler handles errors, Clang-Tidy handles static analysis and recommendations, and IntelliSense handles editor features only.
+Development started in Visual Studio with MSVC then migrated fully to Neovim with clangd LSP and Clang/LLVM. Clang enforces stricter C++20 compliance than MSVC, produces substantially more precise error diagnostics, and makes cross-platform development straightforward. The tooling structure that resulted is clean: the compiler handles errors, Clang-Tidy handles static analysis and recommendations, and IntelliSense handles editor features only.
 
 The result is a capable forward renderer with zero memory leaks, zero crashes, and an architecture designed to grow. Physics, animation, audio, and networking are out of scope for this phase.
 
@@ -92,7 +92,7 @@ Both examples share the same controls.
 
 ### 01_comprehensive
 
-Renders all 10 MeshFactory primitives across two rows with a three-point lighting setup and a skybox. Demonstrates the full rendering pipeline including frustum culling, material batching, three-pass transparency, and instanced rendering.
+Renders all 10 MeshFactory primitives across two rows with a three-point lighting setup and a skybox.
 
 Row 1: Cube, Sphere, Cylinder, Plane, Quad
 
