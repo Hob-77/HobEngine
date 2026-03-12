@@ -4,15 +4,7 @@
 
 ## Overview
 
-HobEngine is a 3D rendering engine written in C++20, built with minimal dependencies over roughly 500 hours across 2 months. Many projects led up to this point including a 2D engine, each one building toward the goal of tackling 3D graphics seriously through primary sources rather than tutorials.
-
-The study began with:
-- [Handmade Hero](https://guide.handmadehero.org/) — Casey Muratori
-- [Game Engine Series](https://www.youtube.com/playlist?list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT) — The Cherno
-- Game Engine Architecture (3rd Edition) — Jason Gregory
-- Real-Time Rendering (4th Edition) — Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, Sébastien Hillaire
-
-The intent was to synthesize those into a system built on understood foundations. Every architectural decision in this engine has a concrete reason behind it.
+HobEngine is a 3D rendering engine written in C++20, built with minimal dependencies over roughly 500 hours across 2 months. Many projects led up to this point including a 2D engine, each one building toward the goal of tackling 3D graphics seriously through primary sources rather than tutorials. Every architectural decision in this engine has a concrete reason behind it.
 
 The rendering pipeline is a forward renderer with a fully API-agnostic interface layer. Scene, Camera, Material, and all engine logic have zero OpenGL in them. The OpenGL backend implements IRenderDevice, IShader, ITexture, IMesh, IFramebuffer, and IDebugRenderer. Replacing OpenGL with Vulkan means implementing those interfaces, not rewriting the engine. The render queue sorts by shader then material then distance, producing a 98% reduction in material bind calls. A centralized renderer class caches OpenGL state, reducing redundant state changes by 81.9%. Frustum culling eliminates 50-95% of objects before they reach the GPU. Instanced rendering reduces 1000 draw calls to one at a 150x measured speedup. These were not micro-optimizations added later, they were designed in from the start because graphics is an optimization-heavy domain and algorithmic decisions compound.
 
@@ -21,6 +13,20 @@ Dependencies were kept minimal intentionally. If the project was starting from n
 Development started in Visual Studio with MSVC then migrated to Clang/LLVM. Both editors are still in use: Neovim with clangd LSP handles day-to-day editing, while Visual Studio provides the debugger and memory profiler for diagnostics. Clang enforces stricter C++20 compliance than MSVC, produces substantially more precise error diagnostics, and makes cross-platform development straightforward. The tooling structure that resulted is clean: the compiler handles errors, Clang-Tidy handles static analysis and recommendations, and IntelliSense handles editor features only.
 
 The result is a capable forward renderer with zero memory leaks, zero crashes, and an architecture designed to grow. Physics, animation, audio, and networking are out of scope for this phase.
+
+---
+
+## Resources
+
+### Video
+
+- [Handmade Hero](https://guide.handmadehero.org/) — Casey Muratori
+- [Game Engine Series](https://www.youtube.com/playlist?list=PLlrATfBNZ98dC-V-N3m0Go4deliWHPFwT) — The Cherno
+
+### Books
+
+- [Game Engine Architecture (3rd Edition)](https://www.gameenginebook.com/) — Jason Gregory
+- [Real-Time Rendering (4th Edition)](https://www.realtimerendering.com/) — Tomas Akenine-Möller, Eric Haines, Naty Hoffman, Angelo Pesce, Michał Iwanicki, Sébastien Hillaire
 
 ---
 
