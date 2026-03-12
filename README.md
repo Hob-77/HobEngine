@@ -112,9 +112,9 @@ Row 2: Cone, Pyramid, Capsule, Torus, Skybox Cube
 
 ### 02_modelshowcase
 
-Loads and renders a Nissan Skyline GT-R OBJ model with MTL material support across multiple submeshes. Five lights surround the model evenly. Demonstrates the OBJ loader with multi-material submesh rendering.
+Loads and renders a Nissan GTR OBJ model with MTL material support across multiple submeshes. Five lights surround the model evenly. Demonstrates the OBJ loader with multi-material submesh rendering.
 
-Model: [Nissan Skyline GT-R](https://poly.pizza/m/a_HKCtYAv2W) via Poly Pizza
+Model: [Nissan GTR](https://poly.pizza/m/a_HKCtYAv2W) by David Sirera via Poly Pizza (CC Attribution)
 
 ---
 
