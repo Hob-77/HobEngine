@@ -30,6 +30,14 @@ The result is a capable forward renderer with zero memory leaks, zero crashes, a
 
 ---
 
+## Assets
+
+- [Container texture](https://learnopengl.com/Getting-started/Textures) by Joey de Vries ([@JoeyDeVriez](https://twitter.com/JoeyDeVriez)) via LearnOpenGL (CC BY 4.0)
+- [Space Skybox](https://opengameart.org/content/space-skybox-1) by kurtk84 via OpenGameArt (CC0)
+- [Nissan GTR](https://poly.pizza/m/a_HKCtYAv2W) by David Sirera via Poly Pizza (CC Attribution)
+
+---
+
 ## Windows
 
 Precompiled binaries are available on the [releases page](https://github.com/Hob-77/HobEngine/releases) for those who do not want to build from source.
