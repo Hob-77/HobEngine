@@ -146,7 +146,7 @@ function(add_example TARGET_NAME SOURCE_FILE)
     if(WIN32)
         target_link_options(${TARGET_NAME} PRIVATE -mconsole)
         if(CMAKE_BUILD_TYPE STREQUAL "Release")
-            target_link_options(${TARGET_NAME} PRIVATE -static-libgcc -static-libstdc++ -static-libgcc)
+            target_link_options(${TARGET_NAME} PRIVATE -static-libgcc -static-libstdc++ -static)
         endif()
     endif()
 
